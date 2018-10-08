@@ -8,7 +8,7 @@ There are only two `npm` packages required:
 - osa
 - oauth
 
-Simply run `npm install` to download everything. 
+Run `npm install` to download everything. 
 
 You must also have [Things][things] installed. If you're on Mojave you'll also need to grant scripting privileges. 
 
@@ -20,7 +20,7 @@ Copy `keys.json.example` to `keys.json` and fill in the appropriate values.
 
 ## Running
 
-Simply run `node index.js` to download all open orders. 
+Run `node index.js` to download all open orders. 
 
 EtsyThingsBridge stores the ID in the notes ensuring each item is only added to Things once. Additional notes can still be added as long as the ID remains. 
 
