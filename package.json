@@ -1,0 +1,23 @@
+{
+  "name": "etsythingsbridge",
+  "version": "1.0.0",
+  "description": "A Node app that reads open orders from Etsy and creates projects in Things. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://emorydunn@github.com/emorydunn/EtsyThingsBridge.git"
+  },
+  "author": "Emory Dunn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emorydunn/EtsyThingsBridge/issues"
+  },
+  "homepage": "https://github.com/emorydunn/EtsyThingsBridge#readme",
+  "dependencies": {
+    "oauth": "^0.9.15",
+    "osa": "^2.5.0"
+  }
+}
