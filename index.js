@@ -37,6 +37,5 @@ function parseTransaction(transaction) {
 }
 
 
-console.log("Fetching Open Orders")
+console.log("Fetching Open Orders at " + new Date().toString())
 etsyAuth.fetchOpenOrders(ordersCallback)
-
