@@ -2,6 +2,10 @@ var osa = require('osa')
 var etsyAuth = require('./etsyAuth')
 var thingsBridge = require('./thingsBridge')
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function ordersCallback(error, data, response) {
   if (error) throw new Error(error);
   var body = JSON.parse(data);
@@ -16,7 +20,8 @@ function transactionsCallback(error, data, response) {
 }
 
 
-function parseOrder(order) {
+async function parseOrder(order) {
+  await sleep(500);
   console.log("Making project for " + order["name"])
   osa(thingsBridge.makeProject, order, thingsBridge.osaHandler)
 
