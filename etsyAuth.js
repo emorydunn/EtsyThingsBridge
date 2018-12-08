@@ -13,7 +13,7 @@ var oauth = new OAuth.OAuth(
 
 function fetchOpenOrders(callback) {
     oauth.get(
-    'https://openapi.etsy.com/v2/shops/emorydunn/receipts/open',
+    'https://openapi.etsy.com/v2/shops/' + oauthKeys.storeName + '/receipts/open',
     oauthKeys.token,
     oauthKeys.tokenSecret,
     callback);
