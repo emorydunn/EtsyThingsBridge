@@ -35,13 +35,13 @@ public class EtsyThingsBridge {
         end tell
     end toDoExists
 
-    on makeProject(projectName, areaName, projectNotes)
+    on makeProject(projectName, areaName, projectNotes, deadline)
         log "Making project with id " & projectName
         if projectExists(projectNotes) then return false
         
         tell application "Things3"
             set theArea to first area whose name is areaName
-            make new project with properties {name:projectName, area:theArea, notes:projectNotes}
+            make new project with properties {name:projectName, area:theArea, notes:projectNotes, due date:deadline}
         end tell
         
         return true
@@ -63,6 +63,13 @@ public class EtsyThingsBridge {
 
     """
     
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        return formatter
+    }()
+    
     public static func makeProjects(for orders: [Order], in area: String) throws {
         
         try orders.forEach { order in
@@ -77,11 +84,14 @@ public class EtsyThingsBridge {
     }
 
     public static func makeProject(for order: Order, in area: String) throws {
+        
+        let dateString = dateFormatter.string(from: order.dueDate)
         let scriptSource = EtsyThingsBridge.subroutines.appending(
             """
-            makeProject("\(order.name)", "\(area)", "\(order.receiptId)")
+            makeProject("\(order.name)", "\(area)", "\(order.receiptId)", date "\(dateString)")
             """
         )
+        
 
         let script = NSAppleScript(source: scriptSource)
 
@@ -100,7 +110,7 @@ public class EtsyThingsBridge {
 
     
     public static func makeToDo(for transaction: Transaction) throws {
-        
+        NSLog("Making to do for \(transaction)")
         let variations = transaction.variations.map { variation in
             variation.formattedValue
             }.joined(separator: ", ")

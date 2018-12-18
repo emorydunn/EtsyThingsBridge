@@ -22,6 +22,10 @@ public class Order: Codable, CustomStringConvertible {
     public let messageFromBuyer: String?
     public let shippedDate: TimeInterval
     
+    public var dueDate: Date {
+        return Date(timeIntervalSince1970: shippedDate)
+    }
+    
     public var transactions: [Transaction] = []
     
     public var description: String {
@@ -42,12 +46,16 @@ struct TransactionDecoder: Decodable, CustomStringConvertible {
     }
 }
 
-public struct Transaction: Codable {
+public struct Transaction: Codable, CustomStringConvertible {
     public let title: String
     public let receiptId: Int
     public let transactionId: Int
     public let variations: [ListingVariation]
     public let quantity: Int
+    
+    public var description: String {
+        return "Transaction \(transactionId): \(quantity)x \(title)"
+    }
 }
 
 public struct ListingVariation: Codable {
