@@ -6,19 +6,16 @@
 //
 
 import Foundation
-import EtsyThingsCore
 
 @available(OSX 10.12, *)
-struct Config {
+public struct Config {
     
-    let configFile: URL
+    public let configFile: URL
     
     let decoder = JSONDecoder()
     let encoder = JSONEncoder()
     
-    
-    
-    init() {
+    public init() {
         // Set up config dir
         let homeDir = FileManager.default.homeDirectoryForCurrentUser
         let configDir = homeDir.appendingPathComponent(".config").appendingPathComponent("EtsyThingsBridge")
@@ -26,17 +23,17 @@ struct Config {
         self.configFile = configDir.appendingPathComponent("keys.json")
     }
     
-    init(config location: URL) {
+    public init(config location: URL) {
         self.configFile = location
     }
     
-    func loadKeys() throws -> EtsyAuth {
+    public func loadKeys() throws -> EtsyAuth {
         let keys = try AuthKeys(from: configFile)
         
         return EtsyAuth(keys: keys)
     }
     
-    func writeConfig() throws -> URL {
+    public func writeConfig() throws -> URL {
         
         do {
             try makeConfigDirectory()
