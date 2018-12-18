@@ -77,7 +77,6 @@ public class EtsyThingsBridge {
     }
 
     public static func makeProject(for order: Order, in area: String) throws {
-        print("Making project for \(order.name)")
         let scriptSource = EtsyThingsBridge.subroutines.appending(
             """
             makeProject("\(order.name)", "\(area)", "\(order.receiptId)")
@@ -87,11 +86,15 @@ public class EtsyThingsBridge {
         let script = NSAppleScript(source: scriptSource)
 
         var error: NSDictionary?
-        let _ = script?.executeAndReturnError(&error)
+        let result = script?.executeAndReturnError(&error)
         
         if error != nil {
             throw AppleScriptError.runtimeError(error!)
         }
+        if result?.booleanValue ?? false {
+            print("Made project for \(order.name)")
+        }
+        
 
     }
 
@@ -105,22 +108,24 @@ public class EtsyThingsBridge {
         let title = "\(transaction.title), \(variations)"
         
         
-        
-        let scriptSource = EtsyThingsBridge.subroutines.appending(
-            """
-            makeToDo("\(transaction.receiptId)", "\(title)", "\(transaction.transactionId)")
-            """
-        )
-        
-        for _ in 1...transaction.quantity {
-            print("Making to do for \(title)")
+        for index in 1...transaction.quantity {
+            let scriptSource = EtsyThingsBridge.subroutines.appending(
+                """
+                makeToDo("\(transaction.receiptId)", "\(title)", "\(transaction.transactionId) \(index)")
+                """
+            )
+
             let script = NSAppleScript(source: scriptSource)
             
             var error: NSDictionary?
-            let _ = script?.executeAndReturnError(&error)
+            let result = script?.executeAndReturnError(&error)
             
             if error != nil {
                 throw AppleScriptError.runtimeError(error!)
+            }
+            
+            if result?.booleanValue ?? false {
+                print("Made to do for \(title)")
             }
         }
 
