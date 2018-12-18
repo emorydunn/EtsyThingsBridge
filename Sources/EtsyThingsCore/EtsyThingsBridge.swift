@@ -37,7 +37,7 @@ public class EtsyThingsBridge {
 
     on makeProject(projectName, areaName, projectNotes)
         log "Making project with id " & projectName
-        if projectExists(projectNotes) then return
+        if projectExists(projectNotes) then return false
         
         tell application "Things3"
             set theArea to first area whose name is areaName
@@ -49,7 +49,7 @@ public class EtsyThingsBridge {
 
     on makeToDo(projectId, toDoName, ToDoNotes)
         log "Making to do with id " & toDoName
-        if toDoExists(ToDoNotes) then return
+        if toDoExists(ToDoNotes) then return false
         
         tell application "Things3"
             set theProject to first project whose notes contains projectId
@@ -57,6 +57,7 @@ public class EtsyThingsBridge {
             make new to do with properties {name:toDoName, notes:ToDoNotes, project:theProject}
         end tell
         
+        return true
         
     end makeToDo
 
