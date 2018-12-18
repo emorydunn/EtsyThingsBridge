@@ -67,7 +67,7 @@ class TransactionDownloadOperation: EtsyOperation {
             
             switch result {
             case .success(_):
-                print("Download complete")
+                break
             case .error(let error):
                 print(error.localizedDescription)
             }
