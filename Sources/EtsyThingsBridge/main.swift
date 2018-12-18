@@ -40,7 +40,7 @@ if #available(OSX 10.12, *) {
                 exit(EXIT_FAILURE)
             }
             
-            print("Download complete")
+            print("Project creation complete")
             exit(EXIT_SUCCESS)
         case .error(let e):
             print(e)
