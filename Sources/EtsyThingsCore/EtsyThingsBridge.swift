@@ -103,7 +103,7 @@ public class EtsyThingsBridge {
         
         let title = "\(transaction.title), \(variations)"
         
-        print("Making to do for \(title)")
+        
         
         let scriptSource = EtsyThingsBridge.subroutines.appending(
             """
@@ -111,15 +111,18 @@ public class EtsyThingsBridge {
             """
         )
         
-        
-        let script = NSAppleScript(source: scriptSource)
-        
-        var error: NSDictionary?
-        let _ = script?.executeAndReturnError(&error)
-        
-        if error != nil {
-            throw AppleScriptError.runtimeError(error!)
+        for _ in 1...transaction.quantity {
+            print("Making to do for \(title)")
+            let script = NSAppleScript(source: scriptSource)
+            
+            var error: NSDictionary?
+            let _ = script?.executeAndReturnError(&error)
+            
+            if error != nil {
+                throw AppleScriptError.runtimeError(error!)
+            }
         }
+
     }
     
     
