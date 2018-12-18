@@ -48,7 +48,7 @@ public class EtsyAuth {
     let oauth: OAuthSwift
     
     let decoder = JSONDecoder()
-    let queue = OperationQueue.main
+    let queue = OperationQueue()
     
     let downloadDispatchQueue = DispatchQueue(label: "DownloadQueue")
     
