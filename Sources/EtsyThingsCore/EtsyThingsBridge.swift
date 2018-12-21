@@ -9,7 +9,7 @@ enum AppleScriptError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .runtimeError(let error):
-            return (error["NSAppleScriptErrorMessage"] as! String)
+            return ("AppleScript runtime error: \(error["NSAppleScriptErrorMessage"] as! String)")
         case .invalidReturnType(let result, expected: let type):
             return "Expected \(type), received \(String(describing: result))"
         }
