@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct OrdersDecoder: Decodable, CustomStringConvertible {
-    let count: Int
-    let results: [Order]
+public struct OrdersDecoder: Decodable, CustomStringConvertible {
+    public let count: Int
+    public let results: [Order]
     
-    var description: String {
+    public var description: String {
         return "Orders count \(count)"
     }
 }
@@ -21,6 +21,16 @@ public class Order: Codable, CustomStringConvertible {
     public let receiptId: Int
     public let messageFromBuyer: String?
     public let shippedDate: TimeInterval
+    
+    // Location Support
+    public let formattedAddress: String
+    public let firstLine: String
+    public let secondLine: String?
+    public let city: String
+    public let state: String
+    public let zip: String
+    public let countryId: Int
+    
     
     public var dueDate: Date {
         return Date(timeIntervalSince1970: shippedDate)
@@ -33,7 +43,8 @@ public class Order: Codable, CustomStringConvertible {
     }
     
     enum CodingKeys: String, CodingKey {
-        case name, receiptId, messageFromBuyer, shippedDate
+        case name, receiptId, messageFromBuyer
+        case formattedAddress, shippedDate, firstLine, secondLine, city, state, zip, countryId
     }
 }
 
