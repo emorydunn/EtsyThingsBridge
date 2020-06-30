@@ -1,6 +1,6 @@
 import XCTest
 import Foundation
-@testable import EtsyThingsBridge
+@testable import EtsyThingsCore
 
 final class EtsyThingsBridge2Tests: XCTestCase {
     func testExample() {
@@ -22,14 +22,14 @@ final class EtsyThingsBridge2Tests: XCTestCase {
                 print("Received \(orders.count) orders")
 
                 do {
-                    try EtsyThingsBridge.makeProjects(for: orders, in: "Etsy")
+                    try EtsyThingsBridge.makeProjects(for: orders.results, in: "Etsy")
                 } catch {
                     print(error.localizedDescription)
                 }
                 
 
                 orderExpectation.fulfill()
-            case .error(let e):
+            case .failure(let e):
                 print(e)
                 orderExpectation.fulfill()
             }
