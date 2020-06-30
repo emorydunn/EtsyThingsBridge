@@ -7,17 +7,14 @@
 
 import Foundation
 import OAuthSwift
+import MapKit
 
-public enum OrdersResult {
-    case success([Order])
-    case error(Error)
+public typealias OrdersResult = Result<OrdersDecoder, Error>
+public typealias OrderTransactionsResult = Result<Order, Error>
+
+extension Notification.Name {
+    static let mapSearch = Notification.Name("MapSearch")
 }
-
-public enum OrderTransactionsResult {
-    case success(Order)
-    case error(Error)
-}
-
 
 public struct AuthKeys: Codable {
     public let storeName: String
