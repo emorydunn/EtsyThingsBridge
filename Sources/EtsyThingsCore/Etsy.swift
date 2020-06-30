@@ -44,7 +44,12 @@ public class EtsyAuth {
     let keys: AuthKeys
     let oauth: OAuthSwift
     
-    let decoder = JSONDecoder()
+    let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        return decoder
+    }()
     let queue = OperationQueue()
     
     let downloadDispatchQueue = DispatchQueue(label: "DownloadQueue")
@@ -63,37 +68,80 @@ public class EtsyAuth {
         oauth.client.credential.oauthToken = keys.token
         oauth.client.credential.oauthTokenSecret = keys.tokenSecret
         
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
         queue.maxConcurrentOperationCount = 1
         queue.qualityOfService = .background
 
     }
     
-    public func fetchOpenOrders(_ callback: @escaping (OrdersResult) -> Void) {
-        let url = "https://openapi.etsy.com/v2/shops/\(keys.storeName)/receipts/open"
+    public func fetchOpenOrders(fetchTransactions: Bool = true, limit: Int? = nil, offset: Int? = nil, _ callback: @escaping (OrdersResult) -> Void) {
+
+        let url = "https://openapi.etsy.com/v2/shops/\(keys.storeName)/receipts"
+        var components = URLComponents(string: url)
+        components?.queryItems = []
+        if let limit = limit {
+            components?.queryItems?.append(URLQueryItem(name: "limit", value: "\(limit)"))
+        }
+        if let offset = offset {
+            components?.queryItems?.append(URLQueryItem(name: "offset", value: "\(offset)"))
+        }
         
-        print("Fetching open orders")
-        let _ = oauth.client.get(url,
+        if components!.queryItems!.isEmpty {
+            components?.queryItems = nil
+        }
+        
+        print("Fetching orders at offset \(offset ?? 0)")
+        let _ = oauth.client.get(components!.string!,
              success: { response in
                 do {
                     let orders = try self.decoder.decode(OrdersDecoder.self, from: response.data)
-                    let operations = orders.results.map { TransactionDownloadOperation(etsy: self, order: $0) }
 
-                    self.downloadDispatchQueue.async {
-                        self.queue.addOperations(operations, waitUntilFinished: true)
-                        
-                        callback(.success(orders.results))
+                    if fetchTransactions {
+                        let operations = orders.results.map { TransactionDownloadOperation(etsy: self, order: $0) }
+                        self.downloadDispatchQueue.async {
+                            self.queue.addOperations(operations, waitUntilFinished: true)
+                            
+                            callback(.success(orders))
+                        }
+                    } else {
+                        callback(.success(orders))
                     }
+
+                    
                     
                 } catch {
-                    callback(.error(error))
+                    callback(.failure(error))
                 }
 
             }, failure: { error in
-               callback(.error(error))
+               callback(.failure(error))
             }
         )
+        
+    }
+    
+    public func fetchMapLocations(for orders: [Order], _ callback: @escaping ([MKMapItem]) -> Void) {
+        print("Preparing to search for \(orders.count) addresses")
+        
+        var items = [MKMapItem]()
+        
+        let token = NotificationCenter.default.addObserver(forName: .mapSearch, object: nil, queue: nil) { notification in
+            if let item = notification.object as? MKMapItem {
+                items.append(item)
+            }
+            
+        }
+        
+        
+        self.downloadDispatchQueue.async {
+
+            let operations = orders.map { MapSearchOperation(order: $0) }
+            self.queue.addOperations(operations, waitUntilFinished: true)
+            
+            NotificationCenter.default.removeObserver(token)
+            callback(items)
+            
+        }
+        
         
     }
     
@@ -109,12 +157,12 @@ public class EtsyAuth {
                     order.transactions = transactions.results
                     callback(.success(order))
                 } catch {
-                    callback(.error(error))
+                    callback(.failure(error))
                 }
                                     
             }, failure: { error in
                 print("Failure for order \(order.receiptId)")
-                callback(.error(error))
+                callback(.failure(error))
             }
         )
     }
